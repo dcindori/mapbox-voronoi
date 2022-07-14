@@ -3,8 +3,8 @@ mapboxgl.accessToken =
 
 var map = new mapboxgl.Map({
   container: "map",
-  style: "mapbox://styles/mapbox/streets-v11", 
-  center: [16.463013, 44.516093], 
+  style: "mapbox://styles/mapbox/streets-v11",
+  center: [16.463013, 44.516093],
   zoom: 6,
 });
 
@@ -18,26 +18,26 @@ function switchLayer(layer) {
 }
 
 function openCity(evt, cityName) {
-    // Declare all variables
-    var i, tabcontent, tablinks;
-  
-    // Get all elements with class="tabcontent" and hide them
-    tabcontent = document.getElementsByClassName("tabcontent");
-    for (i = 0; i < tabcontent.length; i++) {
-      tabcontent[i].style.display = "none";
-    }
-  
-    // Get all elements with class="tablinks" and remove the class "active"
-    tablinks = document.getElementsByClassName("tablinks");
-    for (i = 0; i < tablinks.length; i++) {
-      tablinks[i].className = tablinks[i].className.replace(" active", "");
-    }
-  
-    // Show the current tab, and add an "active" class to the button that opened the tab
-    document.getElementById(cityName).style.display = "block";
-    evt.currentTarget.className += " active";
+  // Declare all variables
+  var i, tabcontent, tablinks;
+
+  // Get all elements with class="tabcontent" and hide them
+  tabcontent = document.getElementsByClassName("tabcontent");
+  for (i = 0; i < tabcontent.length; i++) {
+    tabcontent[i].style.display = "none";
   }
-  
+
+  // Get all elements with class="tablinks" and remove the class "active"
+  tablinks = document.getElementsByClassName("tablinks");
+  for (i = 0; i < tablinks.length; i++) {
+    tablinks[i].className = tablinks[i].className.replace(" active", "");
+  }
+
+  // Show the current tab, and add an "active" class to the button that opened the tab
+  document.getElementById(cityName).style.display = "block";
+  evt.currentTarget.className += " active";
+}
+
 for (var i = 0; i < inputs.length; i++) {
   inputs[i].onclick = switchLayer;
 }
@@ -9804,7 +9804,10 @@ var points = {
   ],
 };
 
-var voronoiPolygons = turf.voronoi(points);
+var bbox = turf.bbox(points);
+var bboxPolygon = turf.bboxPolygon(bbox);
+
+var voronoiPolygons = turf.voronoi(points, bboxPolygon);
 // Posto je voronoi izgubio featurese stare, treba dodjeliti clustere nazad u polygone kako bi se mogli kasnije obojati
 for (i = 0; i < voronoiPolygons["features"].length; i++) {
   voronoiPolygons["features"][i].properties = {
@@ -9934,7 +9937,21 @@ map.on("load", function () {
         "#853d37",
         "#873d19",
       ],
-      "fill-opacity": 0.5,
+      "fill-opacity": 0.7,
+    },
+  });
+
+  map.addLayer({
+    id: "bboxPolygon",
+    type: "line",
+    source: {
+      type: "geojson",
+      data: bboxPolygon,
+    },
+    layout: {},
+    paint: {
+      // Bojanje cluster-a po unique boji, uzima ID iz voronoiPolygons koji je dodan prije
+      "line-opacity": 1,
     },
   });
 
@@ -9948,121 +9965,9 @@ map.on("load", function () {
     },
     layout: {},
     paint: {
-      "circle-radius": {
-        base: 2,
-      },
-      // Takoder boja unique cluster ali uzima featurese iz points-a, a ne iz voroniPolygona.
-      "circle-color": [
-        "case",
-        ["==", ["get", "cluster"], 1],
-        "#a9002a",
-        ["==", ["get", "cluster"], 2],
-        "#60df76",
-        ["==", ["get", "cluster"], 3],
-        "#b50ea0",
-        ["==", ["get", "cluster"], 4],
-        "#259e0d",
-        ["==", ["get", "cluster"], 5],
-        "#d35fe4",
-        ["==", ["get", "cluster"], 6],
-        "#7ebb0f",
-        ["==", ["get", "cluster"], 7],
-        "#3742c0",
-        ["==", ["get", "cluster"], 8],
-        "#b9ce1c",
-        ["==", ["get", "cluster"], 9],
-        "#8a72fe",
-        ["==", ["get", "cluster"], 10],
-        "#1c7300",
-        ["==", ["get", "cluster"], 11],
-        "#f761df",
-        ["==", ["get", "cluster"], 12],
-        "#205f15",
-        ["==", ["get", "cluster"], 13],
-        "#c685ff",
-        ["==", ["get", "cluster"], 14],
-        "#828400",
-        ["==", ["get", "cluster"], 15],
-        "#0178f2",
-        ["==", ["get", "cluster"], 16],
-        "#f8761e",
-        ["==", ["get", "cluster"], 17],
-        "#02a7fd",
-        ["==", ["get", "cluster"], 18],
-        "#c69000",
-        ["==", ["get", "cluster"], 19],
-        "#72349e",
-        ["==", ["get", "cluster"], 20],
-        "#b7d165",
-        ["==", ["get", "cluster"], 21],
-        "#294ea3",
-        ["==", ["get", "cluster"], 22],
-        "#ff9d4f",
-        ["==", ["get", "cluster"], 23],
-        "#007dce",
-        ["==", ["get", "cluster"], 24],
-        "#e93139",
-        ["==", ["get", "cluster"], 25],
-        "#7bda97",
-        ["==", ["get", "cluster"], 26],
-        "#e00072",
-        ["==", ["get", "cluster"], 27],
-        "#019b85",
-        ["==", ["get", "cluster"], 28],
-        "#ff94fd",
-        ["==", ["get", "cluster"], 29],
-        "#617100",
-        ["==", ["get", "cluster"], 30],
-        "#d0a4ff",
-        ["==", ["get", "cluster"], 31],
-        "#b16900",
-        ["==", ["get", "cluster"], 32],
-        "#9bb2ff",
-        ["==", ["get", "cluster"], 33],
-        "#aa4c00",
-        ["==", ["get", "cluster"], 34],
-        "#0072a3",
-        ["==", ["get", "cluster"], 35],
-        "#ff8465",
-        ["==", ["get", "cluster"], 36],
-        "#019ca1",
-        ["==", ["get", "cluster"], 37],
-        "#ff6bad",
-        ["==", ["get", "cluster"], 38],
-        "#abd28b",
-        ["==", ["get", "cluster"], 39],
-        "#6e3e8b",
-        ["==", ["get", "cluster"], 40],
-        "#e7c16b",
-        ["==", ["get", "cluster"], 41],
-        "#5d497e",
-        ["==", ["get", "cluster"], 42],
-        "#dbc489",
-        ["==", ["get", "cluster"], 43],
-        "#9e1753",
-        ["==", ["get", "cluster"], 44],
-        "#8ca26d",
-        ["==", ["get", "cluster"], 45],
-        "#ff8edd",
-        ["==", ["get", "cluster"], 46],
-        "#5e5700",
-        ["==", ["get", "cluster"], 47],
-        "#e9b6e4",
-        ["==", ["get", "cluster"], 48],
-        "#4b087e",
-        ["==", ["get", "cluster"], 49],
-        "#ff7da2",
-        ["==", ["get", "cluster"], 50],
-        "#a68959",
-        ["==", ["get", "cluster"], 51],
-        "#936995",
-        ["==", ["get", "cluster"], 52],
-        "#ffa477",
-        ["==", ["get", "cluster"], 53],
-        "#853d37",
-        "#873d19",
-      ],
-      "circle-opacity": 1,
+      "circle-radius": 2,
+      "circle-color": "#000000",
+      "circle-opacity": 0.6,
     },
   });
 
@@ -10197,9 +10102,11 @@ map.on("load", function () {
       type: "geojson",
       data: "./data/reverseCroatia.geojson",
     },
-    layout: {},
+    layout: {
+      visibility: "none",
+    },
     paint: {
-      "fill-opacity": 1,
+      "fill-opacity": 0.5,
       "fill-color": "#363636",
     },
   });
